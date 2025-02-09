@@ -45,14 +45,6 @@ function Notify(titletxt, text, time)
         message.TextSize = 15
         message.TextScaled = true
 
-        local offset = 50
-        for _, notif in ipairs(Notifbro) do
-            offset = offset + notif.Size.Y.Offset + 10
-        end
-
-        Main.Position = UDim2.new(1, 5, 0, offset)
-        table.insert(Notifbro, Main)
-
         task.wait(0.1)
         Main:TweenPosition(UDim2.new(1, -nw, 0, offset), Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 0.5, true)
         Main:TweenSize(UDim2.new(0, nw * 1.06, 0, nh * 1.06), Enum.EasingDirection.Out, Enum.EasingStyle.Elastic, 0.5, true)
