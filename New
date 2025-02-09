@@ -45,6 +45,14 @@ function Notify(titletxt, text, time)
         message.TextSize = 15
         message.TextScaled = true
 
+        local offset = 50
+        for _, notif in ipairs(Notifbro) do
+            offset = offset + notif.Size.Y.Offset + 10
+        end
+
+        Main.Position = UDim2.new(1, 5, 0, offset)
+        table.insert(Notifbro, Main)
+
         task.wait(0.1)
         Main:TweenPosition(UDim2.new(1, -nw, 0, offset), Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 0.5, true)
         Main:TweenSize(UDim2.new(0, nw * 1.06, 0, nh * 1.06), Enum.EasingDirection.Out, Enum.EasingStyle.Elastic, 0.5, true)
@@ -59,6 +67,21 @@ function Notify(titletxt, text, time)
         task.wait(0.2)
         Main:TweenPosition(UDim2.new(1, 5, 0, offset), Enum.EasingDirection.In, Enum.EasingStyle.Bounce, 0.5, true)
         task.wait(0.5)
+
+        GUI:Destroy()
+        for i, notif in ipairs(Notifbro) do
+            if notif == Main then
+                table.remove(Notifbro, i)
+                break
+            end
+        end
+
+        for i, notif in ipairs(Notifbro) do
+            local newOffset = 50 + (nh + 10) * (i - 1)
+            notif:TweenPosition(UDim2.new(1, -nw, 0, newOffset), Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 0.5, true)
+        end
+    end)() -- Invoke the coroutine immediately
+end
 
 
 
@@ -1383,65 +1406,6 @@ end
 
 end)
 
-
-
-Donate:CreateLabel("Copy Gamepass Link")
-Donate:CreateLabel("Or Buy (if supported)")
-AddDonate(1, 1023295253)
-AddDonate(2, 844706573)
-AddDonate(3, 1023179481)
-AddDonate(7, 844634872)
-AddDonate(10, 843153917)
-AddDonate(20, 843466025)
-AddDonate(27, 843315711)
-AddDonate(50, 843288679)
-AddDonate(100, 843403232)
-AddDonate(150, 843371492)
-AddDonate(1000, 1023447169)
-AddDonate(1430, 1023583012)
-
-
-
-Notify("PLEASE", "Donate me, im poor :(", 1)
-
--- Create a frame for secret input
-local Secret = Tab:CreateFrame("Secret")
-GayLabel = Secret:CreateLabel(" ")
-
--- Create a box for secret code input
-GayBox = Secret:CreateBox("Secret Code..", 10044538000, function(arg)
-    if arg ~= "DEVMODE1291" and arg ~= "LAG" and arg ~= "PLZ" and arg ~= "S0N1C" and arg ~= "N3K0!" and arg ~= "bypassio" then
-        Notify("Wrong Key",arg,3)
-        
-        GayLabel:UpdateLabel("Join Discord To Get Secret Codes")
-        task.wait(1)
-        GayLabel:UpdateLabel(" ")
-     elseif arg == "S0N1C" then
-     Notify("WIP","BRO STOP",10)
-    elseif arg == "DEVM0DE1" then
-        Notify("Gazer","Bro.",10)
-    elseif arg == "LAG" then
-    GayLabel:UpdateLabel("FE LOW FPS ANIMATION")
-    Secret:CreateButton("Code : LAG","Lag Animation Fps", function()
-    Notify("Of course","its done ", 5)
-    adjustAnimationSpeed()
-    end)
-    
-    elseif arg == "N3K0!" then
-    Secret:CreateButton("Code : NEKO!",lean .. " Version Of Neko", function()
-    Notify("WIP","Yeah Still Not Now Ahha Fuck You!",5)
-     end)
-     
-    elseif arg == "PLZ" then
-    Secret:CreateButton("Code : PLZ","Donate..", function()
-    Notify("Lazy...", "Yeah" , 5)
-    end)
-    
-    elseif arg == "bypassio" then
-    Secret:CreateButton("Code : bypassio","Spawn Chat Bypass GUI", function()
-    bypassio()
-    end)
-    
    
        end
        end)
