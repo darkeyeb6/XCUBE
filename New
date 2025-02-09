@@ -85,7 +85,7 @@ end
 
 
 
-local guiName = "XCUBE"
+local guiName = "Xcube"
 
 if GazeGoGui:FindFirstChild(guiName) then
     Notify("Error","Script Already Executed", 1)
@@ -157,7 +157,7 @@ end
 
 
 local function bypassio()
-Notify("Hi..", "lol", 5)
+Notify("Later..", "Fuck Tags!, Not Like this", 5)
 end
 
 
@@ -184,6 +184,17 @@ local function PLZ()
     bar.Size = UDim2.new(0, 0, 1, 0) -- initial size of bar
     bar.BackgroundColor3 = Color3.new(0, 1, 0) -- green color
     bar.Parent = frame
+
+    -- Create a text label
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Text = "(〒⁠﹏⁠〒⁠) {Plz Donate}"
+    textLabel.TextSize = 20
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.Position = UDim2.new(0, 0, -3, 0) -- adjust position if needed
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextColor3 = Color3.new(1, 1, 1) -- white color
+    textLabel.BackgroundTransparency = 1 -- make the background invisible
+    textLabel.Parent = frame
 
     -- Create a sound
     local sound = Instance.new("Sound")
@@ -694,6 +705,23 @@ local HttpService = game:GetService("HttpService")
 
 -- Save the last animations to a file
 
+
+-- Call this function whenever `lastAnimations` is updated
+
+
+
+local function Buy(gamePassID)
+    local MarketplaceService = game:GetService("MarketplaceService")
+    local success, errorMessage = pcall(function()
+        MarketplaceService:PromptGamePassPurchase(game:GetService("Players").LocalPlayer, gamePassID)
+    end)
+    
+    if not success then
+        setclipboard("https://www.roblox.com/game-pass/" .. gamePassID)
+        Notify("Copied", "Gamepass Link", 5)
+    end
+end
+
 -- Function to reset idle animation
 local function ResetIdle()
 
@@ -1023,7 +1051,7 @@ if lastAnimationsData.SwimIdle then
 end
         
     else
-        Notify(""No Saved Animations Found", 5)
+        Notify("First?", "No Saved Animations Found", 5)
     end
 end
 
@@ -1177,7 +1205,7 @@ local secret = "Another Small Update"
 
 local Gazer = library:CreateWindow(lean .. " Fe " .. anima .. tion .. " (".. secret .. "!)", "9.9.1" , 17842067503)
 
-local Tab = XCUBE
+local Tab = Gazer:CreateTab("@" .. loan .. "_HA")
 
 local Idle = Tab:CreateFrame("Idle")
 Idle:CreateLabel("Idle Anim")
@@ -1188,6 +1216,41 @@ local Fall = Tab:CreateFrame("Fall")
 local SwimIdle = Tab:CreateFrame("Swim Idle")
 local Swim = Tab:CreateFrame("Swim")
 local Climb = Tab:CreateFrame("Climb")
+local Info = Tab:CreateFrame("Misc")
+local Emote = Tab:CreateFrame("Emotes")
+local Donate = Tab:CreateFrame("Donate")
+
+
+local function AddR6Emote(name, id)
+loadAnimation(id)
+    Emote:CreateButton(name, "Special R6 Emote", function()
+        PlayEmote(id)
+    end)
+end
+
+local function AddEmote(name, id, price)
+loadAnimation(id)
+    Emote:CreateButton(name, "Price = " .. (price or "N/A"), function()
+        PlayEmote(id)
+    end)
+end
+
+
+local function ZeroAddEmote(name, id, price)
+loadAnimation(id)
+    Emote:CreateButton(name, "Price = " .. (price or "N/A"), function()
+        ZeroPlayEmote(id)
+    end)
+end
+
+local function AddFEmote(name, id, price)
+loadAnimation(id)
+    Emote:CreateButton(name, "Price = " .. (price or "N/A"), function()
+        FPlayEmote(id)
+    end)
+end
+
+-- Define a local function
 
 -- Define a function that takes another function as an argument and calls it
 local function callFunction(func)
@@ -1197,6 +1260,59 @@ local function callFunction(func)
         warn("The argument provided is not a function")
     end
 end
+
+
+
+
+
+
+local function AddDonate(Price, Id)
+    Donate:CreateButton(Price .. " Robux","Donate " .. Price .. " Robux", function()
+        Buy(Id)
+    end)
+end
+
+Info:CreateLabel("Animation Status:")
+IdleLabel = Info:CreateLabel("Current Idle Animation = None")
+WalkLabel = Info:CreateLabel("Current Walk Animation = None")
+RunLabel = Info:CreateLabel("Current Run Animation = None")
+JumpLabel = Info:CreateLabel("Current Jump Animation = None")
+FallLabel = Info:CreateLabel("Current Fall Animation = None")
+SwimIdleLabel = Info:CreateLabel("Current Swim Idle Animation = None")
+SwimLabel = Info:CreateLabel("Current Swim Animation = None")
+ClimbLabel = Info:CreateLabel("Current Climb Animation = None")
+Info:CreateButton(lean .. " Discord Server", "Join My Discord Server", function()
+setclipboard("https://discord.com/invite/SmFPVYjHYy")
+end)
+Info:CreateLabel("UI : Valiant UI")
+Emote:CreateLabel("R6 Emote (Can Be Played On R15)")
+AddEmote("Dance 1", 12521009666)
+AddEmote("Dance 2", 12521169800)
+AddEmote("Dance 3", 12521178362)
+AddEmote("Cheer", 12521021991)
+AddEmote("Laugh", 12521018724)
+AddEmote("Point", 12521007694)
+AddEmote("Wave", 12521004586)
+
+
+
+Emote:CreateLabel("Gear/Model Anim")
+AddFEmote("Soldier - Assault Fire", 4713811763)
+AddEmote("Soldier - Assault Aim", 4713633512)
+AddEmote("Zombie - Attack", 3489169607)
+AddFEmote("Zombie - Death", 3716468774)
+AddEmote("Roblox - Sleep", 2695918332)
+AddEmote("Roblox - Quake", 2917204509)
+AddEmote("Roblox - Rifle Reload", 3972131105)
+ZeroAddEmote("Accurate T Pose", 2516930867)
+
+
+
+local EmoteLabel = Emote:CreateLabel("Emote <Test>")
+
+
+
+
 
 for name, ids in pairs(Animations.Idle) do
 task.wait()
@@ -1290,6 +1406,65 @@ end
 
 end)
 
+
+
+Donate:CreateLabel("Copy Gamepass Link")
+Donate:CreateLabel("Or Buy (if supported)")
+AddDonate(1, 1023295253)
+AddDonate(2, 844706573)
+AddDonate(3, 1023179481)
+AddDonate(7, 844634872)
+AddDonate(10, 843153917)
+AddDonate(20, 843466025)
+AddDonate(27, 843315711)
+AddDonate(50, 843288679)
+AddDonate(100, 843403232)
+AddDonate(150, 843371492)
+AddDonate(1000, 1023447169)
+AddDonate(1430, 1023583012)
+
+
+
+Notify("PLEASE", "Donate me, im poor :(", 1)
+
+-- Create a frame for secret input
+local Secret = Tab:CreateFrame("Secret")
+GayLabel = Secret:CreateLabel(" ")
+
+-- Create a box for secret code input
+GayBox = Secret:CreateBox("Secret Code..", 10044538000, function(arg)
+    if arg ~= "DEVMODE1291" and arg ~= "LAG" and arg ~= "PLZ" and arg ~= "S0N1C" and arg ~= "N3K0!" and arg ~= "bypassio" then
+        Notify("Wrong Key",arg,3)
+        
+        GayLabel:UpdateLabel("Join Discord To Get Secret Codes")
+        task.wait(1)
+        GayLabel:UpdateLabel(" ")
+     elseif arg == "S0N1C" then
+     Notify("WIP","BRO STOP",10)
+    elseif arg == "DEVM0DE1" then
+        Notify("Gazer","Bro.",10)
+    elseif arg == "LAG" then
+    GayLabel:UpdateLabel("FE LOW FPS ANIMATION")
+    Secret:CreateButton("Code : LAG","Lag Animation Fps", function()
+    Notify("Of course","its done ", 5)
+    adjustAnimationSpeed()
+    end)
+    
+    elseif arg == "N3K0!" then
+    Secret:CreateButton("Code : NEKO!",lean .. " Version Of Neko", function()
+    Notify("WIP","Yeah Still Not Now Ahha Fuck You!",5)
+     end)
+     
+    elseif arg == "PLZ" then
+    Secret:CreateButton("Code : PLZ","Donate..", function()
+    Notify("Lazy...", "Yeah" , 5)
+    end)
+    
+    elseif arg == "bypassio" then
+    Secret:CreateButton("Code : bypassio","Spawn Chat Bypass GUI", function()
+    bypassio()
+    end)
+    
    
        end
        end)
