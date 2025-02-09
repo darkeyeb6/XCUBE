@@ -60,21 +60,6 @@ function Notify(titletxt, text, time)
         Main:TweenPosition(UDim2.new(1, 5, 0, offset), Enum.EasingDirection.In, Enum.EasingStyle.Bounce, 0.5, true)
         task.wait(0.5)
 
-        GUI:Destroy()
-        for i, notif in ipairs(Notifbro) do
-            if notif == Main then
-                table.remove(Notifbro, i)
-                break
-            end
-        end
-
-        for i, notif in ipairs(Notifbro) do
-            local newOffset = 50 + (nh + 10) * (i - 1)
-            notif:TweenPosition(UDim2.new(1, -nw, 0, newOffset), Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 0.5, true)
-        end
-    end)() -- Invoke the coroutine immediately
-end
-
 
 
 local guiName = "Xcube"
