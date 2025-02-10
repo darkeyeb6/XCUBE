@@ -1,0 +1,156 @@
+local Players = game:GetService("Players")
+local speaker = Players.LocalPlayer
+
+-- Load Rayfield Library
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+Rayfield:LoadConfiguration()
+
+-- Create Main Window
+local Window = Rayfield:CreateWindow({
+    Name = "XCUBE Window",
+    Icon = 0,
+    LoadingTitle = "XCUBE",
+    LoadingSubtitle = "by Sirius | SCRIPT BY XCUBE",
+    Theme = "Default",
+    DisableRayfieldPrompts = false,
+    DisableBuildWarnings = false,
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "XCUBEhub"
+    },
+    KeySystem = false
+})
+
+-- Create Tabs
+local AnimationsTab = Window:CreateTab("Animations", 4483362458)
+local NewTab = Window:CreateTab("New", 4483362458)
+local CustomAniTab = Window:CreateTab("Custom-ani", 4483362458)
+
+-- Adidas & Wicked Popular Buttons
+NewTab:CreateButton({
+    Name = "Adidas",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/Adidas"))();
+    end
+})
+
+NewTab:CreateButton({
+    Name = "Wicked Popular",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/Wicked%20(Popular)"))();
+    end
+})
+
+-- Standard Animation Buttons
+local animations = {
+    {"Werewolf", "werewolf"},
+    {"Zombie", "Zombie"},
+    {"Vampire", "Vampire"},
+    {"Toy", "Toy"},
+    {"Superhero", "Superhero"},
+    {"Stylish", "Stylish"},
+    {"Pirate", "Pirate"},
+    {"Old-school", "Old-school"},
+    {"Ninja", "Ninja"},
+    {"Mage", "Mage"},
+    {"Levitation", "levitation"},
+    {"Knight", "Knight"},
+    {"Elder", "elder"},
+    {"Cartoony", "Cartoony"},
+    {"Bubbly", "Bubby"},
+    {"Bold", "Bold"},
+    {"Astronaut", "Astronaut"}
+}
+
+for _, anim in ipairs(animations) do
+    AnimationsTab:CreateButton({
+        Name = anim[1],
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/" .. anim[2]))();
+        end
+    })
+end
+
+-- Animation Storage
+local Animations = {
+    Idle = {"", ""},  -- Two values for Idle1 and Idle2
+    Walk = "",
+    Run = "",
+    Jump = "",
+    Fall = "",
+    SwimIdle = "",
+    Swim = "",
+    Climb = ""
+}
+
+-- Function to Apply Animations
+local function applyAnimation(animationType, animationId)
+    local Char = speaker.Character
+    if not Char then return end
+
+    local Animate = Char:FindFirstChild("Animate")
+    if not Animate then return end
+
+    if animationType == "Idle" and animationId[1] ~= "" and animationId[2] ~= "" then
+        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId[1]
+        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId[2]
+    elseif animationType == "Walk" and animationId ~= "" then
+        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
+    elseif animationType == "Run" and animationId ~= "" then
+        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
+    elseif animationType == "Jump" and animationId ~= "" then
+        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
+    elseif animationType == "Fall" and animationId ~= "" then
+        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
+    elseif animationType == "SwimIdle" and animationId ~= "" then
+        Animate.swimidle.SwimIdle.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
+    elseif animationType == "Swim" and animationId ~= "" then
+        Animate.swim.Swim.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
+    elseif animationType == "Climb" and animationId ~= "" then
+        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
+    end
+end
+
+-- Create Input Fields for Custom Animations
+CustomAniTab:CreateInput({
+    Name = "Idle 1 Animation ID",
+    PlaceholderText = "Enter Idle 1 Animation ID",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(value)
+        Animations.Idle[1] = value
+        applyAnimation("Idle", Animations.Idle)
+    end
+})
+
+CustomAniTab:CreateInput({
+    Name = "Idle 2 Animation ID",
+    PlaceholderText = "Enter Idle 2 Animation ID",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(value)
+        Animations.Idle[2] = value
+        applyAnimation("Idle", Animations.Idle)
+    end
+})
+
+for _, animType in ipairs({"Walk", "Run", "Jump", "Fall", "SwimIdle", "Swim", "Climb"}) do
+    CustomAniTab:CreateInput({
+        Name = animType .. " Animation ID",
+        PlaceholderText = "Enter " .. animType .. " Animation ID",
+        RemoveTextAfterFocusLost = false,
+        Callback = function(value)
+            Animations[animType] = value
+            applyAnimation(animType, value)
+        end
+    })
+end
+
+-- Auto-Reapply Custom Animations on Respawn
+speaker.CharacterAdded:Connect(function()
+    task.wait(1) -- Wait for character to fully load
+    for animationType, animationId in pairs(Animations) do
+        if animationId ~= "" then
+            applyAnimation(animationType, animationId)
+        end
+    end
+end)
