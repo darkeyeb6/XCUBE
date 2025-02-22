@@ -1603,32 +1603,7 @@ do -- Fake Module: StarterGui.YARHM.FUNCTIONS
 			listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 			for _, item in ipairs(module) do
 				if item["Type"] == "Text" then
-		
-					local text = Instance.new("TextLabel")
-					text.Parent = AREA
-		
-					text.BackgroundTransparency = 1
-					text.Text = item["Args"][1]
-					text.TextScaled = true
-					text.TextColor3 = Color3.fromRGB(255,255,255)
-					text.Font = Enum.Font.GothamBold
-					text.Size = UDim2.new(1,0,0,20)
-					text.TextXAlignment = item["Args"][2] == "center" and Enum.TextXAlignment.Center or Enum.TextXAlignment.Left
-					text.RichText = true
-		
-		
-				elseif item["Type"] == "Button" then
-		
-					local button = Instance.new("TextButton")
-					button.Parent = AREA
-		
-					button.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
-					button.Text = item["Args"][1]
-					button.TextScaled = true
-					button.TextColor3 = Color3.fromRGB(255,255,255)
-					button.Font = Enum.Font.GothamBold
-					button.Size = UDim2.new(1,0,0,25)
-		
+
 					local padding = Instance.new("UIPadding")
 					padding.Parent = button
 		
