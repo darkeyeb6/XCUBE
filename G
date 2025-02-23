@@ -162,7 +162,7 @@ end
 
 
 local function PLZ()
-    -- GÐ°zÐµr code execution
+    -- Gаzеr code execution
     -- Place this part in StarterPlayer > StarterPlayerScripts
     local Players = game:GetService("Players")
     local LocalPlayer = Players.LocalPlayer
@@ -187,7 +187,7 @@ local function PLZ()
 
     -- Create a text label
     local textLabel = Instance.new("TextLabel")
-    textLabel.Text = "(ã€’â ï¹â ã€’â ) {Plz Donate}"
+    textLabel.Text = "(〒⁠﹏⁠〒⁠) {Plz Donate}"
     textLabel.TextSize = 20
     textLabel.Size = UDim2.new(1, 0, 1, 0)
     textLabel.Position = UDim2.new(0, 0, -3, 0) -- adjust position if needed
