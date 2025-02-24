@@ -1,33 +1,60 @@
---keybind to open is comma
---made by Gi#7331
+game:GetService("StarterGui")
 
-local IsStudio = false
+if game:GetService("CoreGui"):FindFirstChild("Emotes") then
+    game:GetService("CoreGui"):FindFirstChild("Emotes"):Destroy()
+end
+
+wait(1)
 
 local ContextActionService = game:GetService("ContextActionService")
 local HttpService = game:GetService("HttpService")
 local GuiService = game:GetService("GuiService")
 local CoreGui = game:GetService("CoreGui")
-local AvatarEditorService = game:GetService("AvatarEditorService")
+local Open = Instance.new("TextButton")
+UICorner = Instance.new("UICorner")
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 
 local Emotes = {}
+local LoadedEmotes = {}
 local function AddEmote(name: string, id: IntValue, price: IntValue?)
-	if not (name and id) then
-		return
-	end
-
-	table.insert(Emotes, {
-		["name"] = name,
-		["id"] = id,
-		["icon"] = "rbxthumb://type=Asset&id=".. id .."&w=150&h=150",
-		["price"] = price or 0,
-		["index"] = #Emotes + 1,
-		["sort"] = {}
-	})
+	LoadedEmotes[id] = false
+	task.spawn(function()
+		if not (name and id) then
+			return
+		end
+		local success, date = pcall(function()
+			local info = MarketplaceService:GetProductInfo(id)
+			local updated = info.Updated
+			return DateTime.fromIsoDate(updated):ToUniversalTime()
+		end)
+		if not success then
+			task.wait(10)
+			AddEmote(name, id, price)
+			return
+		end
+		local unix = os.time({
+			year = date.Year,
+			month = date.Month,
+			day = date.Day,
+			hour = date.Hour,
+			min = date.Minute,
+			sec = date.Second
+		})
+		LoadedEmotes[id] = true
+		table.insert(Emotes, {
+			["name"] = name,
+			["id"] = id,
+			["icon"] = "rbxthumb://type=Asset&id=".. id .."&w=150&h=150",
+			["price"] = price or 0,
+			["lastupdated"] = unix,
+			["sort"] = {}
+		})
+	end)
 end
-local CurrentSort = "newestfirst"
+local CurrentSort = "recentfirst"
 
 local FavoriteOff = "rbxassetid://10651060677"
 local FavoriteOn = "rbxassetid://10651061109"
@@ -37,8 +64,7 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Emotes"
 ScreenGui.DisplayOrder = 2
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Enabled = false
+ScreenGui.Enabled = true
 
 local BackFrame = Instance.new("Frame")
 BackFrame.Size = UDim2.new(0.9, 0, 0.5, 0)
@@ -48,6 +74,34 @@ BackFrame.SizeConstraint = Enum.SizeConstraint.RelativeYY
 BackFrame.BackgroundTransparency = 1
 BackFrame.BorderSizePixel = 0
 BackFrame.Parent = ScreenGui
+
+Open.Name = "Open"
+Open.Parent = ScreenGui
+Open.Draggable = true
+Open.Size = UDim2.new(0.05,0,0.114,0)
+Open.Position = UDim2.new(0.05, 0, 0.25, 0)
+Open.Text = "Close"
+Open.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Open.TextColor3 = Color3.fromRGB(255, 255, 255)
+Open.TextScaled = true
+Open.TextSize = 20
+Open.Visible = true
+Open.BackgroundTransparency = .5
+Open.MouseButton1Up:Connect(function()
+if Open.Text == "Open" then
+		Open.Text = "Close"
+		BackFrame.Visible = true
+else
+		if Open.Text == "Close" then
+			Open.Text = "Open"
+			BackFrame.Visible = false
+		end
+end
+end)
+
+UICorner.Name = "UICorner"
+UICorner.Parent = Open
+UICorner.CornerRadius = UDim.new(1, 0)
 
 local EmoteName = Instance.new("TextLabel")
 EmoteName.Name = "EmoteName"
@@ -139,14 +193,15 @@ local function createsort(order, text, sort)
 	CreatedSort.Parent = SortFrame
 	CreatedSort.MouseButton1Click:Connect(function()
 		SortFrame.Visible = false
+		Open.Text = "Open"
 		CurrentSort = sort
 		SortEmotes()
 	end)
 	return CreatedSort
 end
 
-createsort(1, "Newest First", "newestfirst")
-createsort(2, "Oldest First", "oldestfirst")
+createsort(1, "Recently Updated First", "recentfirst")
+createsort(2, "Recently Updated Last", "recentlast")
 createsort(3, "Alphabetically First", "alphabeticfirst")
 createsort(4, "Alphabetically Last", "alphabeticlast")
 createsort(5, "Highest Price", "highestprice")
@@ -164,6 +219,7 @@ SortButton.BackgroundTransparency = 0.3
 SortButton.Text = "Sort"
 SortButton.MouseButton1Click:Connect(function()
 	SortFrame.Visible = not SortFrame.Visible
+	Open.Text = "Open"
 end)
 Corner:Clone().Parent = SortButton
 SortButton.Parent = BackFrame
@@ -175,11 +231,11 @@ CloseButton.Position = UDim2.new(0.075, 0, -0.075, 0)
 CloseButton.Size = UDim2.new(0.15, 0, 0.1, 0)
 CloseButton.TextScaled = true
 CloseButton.TextColor3 = Color3.new(1, 1, 1)
-CloseButton.BackgroundColor3 = Color3.new(0, 0, 0)
+CloseButton.BackgroundColor3 = Color3.new(0.5, 0, 0)
 CloseButton.BackgroundTransparency = 0.3
-CloseButton.Text = "Close"
+CloseButton.Text = "Kill Gui"
 CloseButton.MouseButton1Click:Connect(function()
-	ScreenGui.Enabled = false
+	ScreenGui:Destroy()
 end)
 Corner:Clone().Parent = CloseButton
 CloseButton.Parent = BackFrame
@@ -225,31 +281,22 @@ SearchBar.Parent = BackFrame
 
 local function openemotes(name, state, input)
 	if state == Enum.UserInputState.Begin then
-		ScreenGui.Enabled = not ScreenGui.Enabled
+		BackFrame.Visible = not BackFrame.Visible
+		Open.Text = "Open"
 	end
 end
 
-if IsStudio then
-	ContextActionService:BindActionAtPriority(
-		"Emote Menu",
-		openemotes,
-		true,
-		2001,
-		Enum.KeyCode.Comma
-	)
-else
-	ContextActionService:BindCoreActionAtPriority(
-		"Emote Menu",
-		openemotes,
-		true,
-		2001,
-		Enum.KeyCode.Comma
-	)
-end
+ContextActionService:BindCoreActionAtPriority(
+	"Emote Menu",
+	openemotes,
+	true,
+	2001,
+	Enum.KeyCode.Comma
+)
 
 local inputconnect
 ScreenGui:GetPropertyChangedSignal("Enabled"):Connect(function()
-	if ScreenGui.Enabled == true then
+	if BackFrame.Visible == false then
 		EmoteName.Text = "Select an Emote"
 		SearchBar.Text = ""
 		SortFrame.Visible = false
@@ -257,7 +304,8 @@ ScreenGui:GetPropertyChangedSignal("Enabled"):Connect(function()
 		inputconnect = UserInputService.InputBegan:Connect(function(input, processed)
 			if not processed then
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
-					ScreenGui.Enabled = false
+					BackFrame.Visible = false
+					Open.Text = "Open"
 				end
 			end
 		end)
@@ -266,43 +314,36 @@ ScreenGui:GetPropertyChangedSignal("Enabled"):Connect(function()
 	end
 end)
 
-if not IsStudio then
-	GuiService.EmotesMenuOpenChanged:Connect(function(isopen)
-		if isopen then
-			ScreenGui.Enabled = false
-		end
-	end)
-end
+GuiService.EmotesMenuOpenChanged:Connect(function(isopen)
+	if isopen then
+		BackFrame.Visible = false
+		Open.Text = "Open"
+	end
+end)
 
 GuiService.MenuOpened:Connect(function()
-	ScreenGui.Enabled = false
+	BackFrame.Visible = false
+	Open.Text = "Open"
 end)
 
 if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
 
-local LocalPlayer = Players.LocalPlayer
-
-if IsStudio then
-	ScreenGui.Parent = LocalPlayer.PlayerGui
+--thanks inf yield
+local SynV3 = syn and DrawingImmediate
+if (not is_sirhurt_closure) and (not SynV3) and (syn and syn.protect_gui) then
+	syn.protect_gui(ScreenGui)
+	ScreenGui.Parent = CoreGui
+elseif get_hidden_gui or gethui then
+	local hiddenUI = get_hidden_gui or gethui
+	ScreenGui.Parent = hiddenUI()
 else
-	--thanks inf yield
-	local SynV3 = syn and DrawingImmediate
-	if (not is_sirhurt_closure) and (not SynV3) and (syn and syn.protect_gui) then
-		syn.protect_gui(ScreenGui)
-		ScreenGui.Parent = CoreGui
-	elseif get_hidden_gui or gethui then
-		local hiddenUI = get_hidden_gui or gethui
-		ScreenGui.Parent = hiddenUI()
-	else
-		ScreenGui.Parent = CoreGui
-	end
+	ScreenGui.Parent = CoreGui
 end
 
-
 local function SendNotification(title, text)
-	if (not IsStudio) and syn and syn.toast_notification then
+	if syn and syn.toast_notification then
 		syn.toast_notification({
 			Type = ToastType.Error,
 			Title = title,
@@ -316,16 +357,11 @@ local function SendNotification(title, text)
 	end
 end
 
-local function HumanoidPlayEmote(humanoid, name, id)
-	if IsStudio then
-		return humanoid:PlayEmote(name)
-	else
-		return humanoid:PlayEmoteAndGetAnimTrackById(id)
-	end
-end
+local LocalPlayer = Players.LocalPlayer
 
 local function PlayEmote(name: string, id: IntValue)
-	ScreenGui.Enabled = false
+	BackFrame.Visible = false
+	Open.Text = "Open"
 	SearchBar.Text = ""
 	local Humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 	local Description = Humanoid and Humanoid:FindFirstChildOfClass("HumanoidDescription")
@@ -334,16 +370,16 @@ local function PlayEmote(name: string, id: IntValue)
 	end
 	if LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R6 then
 		local succ, err = pcall(function()
-			HumanoidPlayEmote(Humanoid, name, id)
+			Humanoid:PlayEmoteAndGetAnimTrackById(id)
 		end)
 		if not succ then
 			Description:AddEmote(name, id)
-			HumanoidPlayEmote(Humanoid, name, id)
+			Humanoid:PlayEmoteAndGetAnimTrackById(id)
 		end
 	else
 		SendNotification(
-			"r6? lol",
-			"you gotta be r15 dude"
+			"R6? nah uh",
+			"you gotta be R15 btu"
 		)
 	end
 end
@@ -356,56 +392,28 @@ local function WaitForChildOfClass(parent, class)
 	return child
 end
 
-local params = CatalogSearchParams.new()
-params.AssetTypes = {Enum.AvatarAssetType.EmoteAnimation}
-params.SortType = Enum.CatalogSortType.RecentlyCreated
-params.SortAggregation = Enum.CatalogSortAggregation.AllTime
-params.IncludeOffSale = true
-params.CreatorName = "Roblox"
-params.Limit = 120
-
-local function getCatalogPage()
-	local success, catalogPage = pcall(function()
-		return AvatarEditorService:SearchCatalog(params)
-	end)
-	if not success then
-		task.wait(5)
-		return getCatalogPage()
-	end
-	return catalogPage
-end
-
-local catalogPage = getCatalogPage()
-
-local pages = {}
-
+local Cursor = ""
 while true do
-	local currentPage = catalogPage:GetCurrentPage()
-	table.insert(pages, currentPage)
-	if catalogPage.IsFinished then
-		break
-	end
-	local function AdvanceToNextPage()
-		local success = pcall(function()
-			catalogPage:AdvanceToNextPageAsync()
+	local function Request()
+		local success, Response = pcall(function()
+			return game:HttpGetAsync("https://catalog.roblox.com/v1/search/items/details?Category=12&Subcategory=39&SortType=1&SortAggregation=&limit=30&IncludeNotForSale=true&cursor=".. Cursor)
 		end)
 		if not success then
-			task.wait(5)
-			return AdvanceToNextPage()
+			task.wait(10)
+			return Request()
 		end
+		return Response
 	end
-	AdvanceToNextPage()
-end
-
-local totalEmotes = {}
-for _, page in pairs(pages) do
-	for _, emote in pairs(page) do
-		table.insert(totalEmotes, emote)
+	local Response = Request()
+	local Body = HttpService:JSONDecode(Response)
+	for i,v in pairs(Body.data) do
+		AddEmote(v.name, v.id, v.price)
 	end
-end
-
-for i, Emote in pairs(totalEmotes) do
-	AddEmote(Emote.Name, Emote.Id, Emote.Price)
+	if Body.nextPageCursor ~= nil then
+		Cursor = Body.nextPageCursor
+	else
+		break
+	end
 end
 
 --unreleased emotes
@@ -413,22 +421,34 @@ AddEmote("Arm Wave", 5915773155)
 AddEmote("Head Banging", 5915779725)
 AddEmote("Face Calisthenics", 9830731012)
 
---finished loading
+--wait for emotes to finish loading
+
+local function EmotesLoaded()
+	for i, loaded in pairs(LoadedEmotes) do
+		if not loaded then
+			return false
+		end
+	end
+	return true
+end
+while not EmotesLoaded() do
+	task.wait()
+end
 Loading:Destroy()
 
 --sorting options setup
 table.sort(Emotes, function(a, b)
-	return a.index < b.index
+	return a.lastupdated > b.lastupdated
 end)
 for i,v in pairs(Emotes) do
-	v.sort.newestfirst = i
+	v.sort.recentfirst = i
 end
 
 table.sort(Emotes, function(a, b)
-	return a.index > b.index
+	return a.lastupdated < b.lastupdated
 end)
 for i,v in pairs(Emotes) do
-	v.sort.oldestfirst = i
+	v.sort.recentlast = i
 end
 
 table.sort(Emotes, function(a, b)
@@ -459,58 +479,31 @@ for i,v in pairs(Emotes) do
 	v.sort.highestprice = i
 end
 
-
-local function IsFileFunc(...)
-	if IsStudio then
-		return
-	elseif isfile then
-		return isfile(...)
+if isfile("FavoritedEmotes.txt") then
+	if not pcall(function()
+		FavoritedEmotes = HttpService:JSONDecode(readfile("FavoritedEmotes.txt"))
+	end) then
+		FavoritedEmotes = {}
 	end
+else
+	writefile("FavoritedEmotes.txt", HttpService:JSONEncode(FavoritedEmotes))
 end
 
-local function WriteFileFunc(...)
-	if IsStudio then
-		return
-	elseif writefile then
-		return writefile(...)
-	end
-end
-
-local function ReadFileFunc(...)
-	if IsStudio then
-		return
-	elseif readfile then
-		return readfile(...)
-	end
-end
-
-if not IsStudio then
-	if IsFileFunc("FavoritedEmotes.txt") then
-		if not pcall(function()
-			FavoritedEmotes = HttpService:JSONDecode(ReadFileFunc("FavoritedEmotes.txt"))
-		end) then
-			FavoritedEmotes = {}
-		end
-	else
-		WriteFileFunc("FavoritedEmotes.txt", HttpService:JSONEncode(FavoritedEmotes))
-	end
-	local UpdatedFavorites = {}
-	for i,name in pairs(FavoritedEmotes) do
-		if typeof(name) == "string" then
-			for i,emote in pairs(Emotes) do
-				if emote.name == name then
-					table.insert(UpdatedFavorites, emote.id)
-					break
-				end
+local UpdatedFavorites = {}
+for i,name in pairs(FavoritedEmotes) do
+	if typeof(name) == "string" then
+		for i,emote in pairs(Emotes) do
+			if emote.name == name then
+				table.insert(UpdatedFavorites, emote.id)
+				break
 			end
 		end
 	end
-	if #UpdatedFavorites ~= 0 then
-		FavoritedEmotes = UpdatedFavorites
-		WriteFileFunc("FavoritedEmotes.txt", HttpService:JSONEncode(FavoritedEmotes))
-	end
 end
-
+if #UpdatedFavorites ~= 0 then
+	FavoritedEmotes = UpdatedFavorites
+	writefile("FavoritedEmotes.txt", HttpService:JSONEncode(FavoritedEmotes))
+end
 
 local function CharacterAdded(Character)
 	for i,v in pairs(Frame:GetChildren()) do
@@ -601,7 +594,7 @@ local function CharacterAdded(Character)
 				Favorite.Image = FavoriteOn
 				EmoteButton.LayoutOrder = Emote.sort[CurrentSort]
 			end
-			WriteFileFunc("FavoritedEmotes.txt", HttpService:JSONEncode(FavoritedEmotes))
+			writefile("FavoritedEmotes.txt", HttpService:JSONEncode(FavoritedEmotes))
 		end)
 	end
 	for i=1,9 do
@@ -623,3 +616,14 @@ if LocalPlayer.Character then
 	CharacterAdded(LocalPlayer.Character)
 end
 LocalPlayer.CharacterAdded:Connect(CharacterAdded)
+
+wait(1)
+
+game.CoreGui.Emotes.Enabled = true
+
+game:GetService("StarterGui"):SetCore("SendNotification",{
+                Title = "Done!",
+                Text = "Emotes gui is here!",
+                 Duration = 10})
+
+game.Players.LocalPlayer.PlayerGui.ContextActionGui:Destroy()
