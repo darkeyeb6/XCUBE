@@ -1,4 +1,7 @@
-game:GetService("StarterGui")
+game:GetService("StarterGui"):SetCore("SendNotification",{
+                Title = "Tips!",
+                Text = "Wait 1 - 10 seconds",
+                 Duration = 10})
 
 if game:GetService("CoreGui"):FindFirstChild("Emotes") then
     game:GetService("CoreGui"):FindFirstChild("Emotes"):Destroy()
@@ -75,34 +78,6 @@ BackFrame.BackgroundTransparency = 1
 BackFrame.BorderSizePixel = 0
 BackFrame.Parent = ScreenGui
 
-Open.Name = "Open"
-Open.Parent = ScreenGui
-Open.Draggable = true
-Open.Size = UDim2.new(0.05,0,0.114,0)
-Open.Position = UDim2.new(0.05, 0, 0.25, 0)
-Open.Text = "Close"
-Open.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Open.TextColor3 = Color3.fromRGB(255, 255, 255)
-Open.TextScaled = true
-Open.TextSize = 20
-Open.Visible = true
-Open.BackgroundTransparency = .5
-Open.MouseButton1Up:Connect(function()
-if Open.Text == "Open" then
-		Open.Text = "Close"
-		BackFrame.Visible = true
-else
-		if Open.Text == "Close" then
-			Open.Text = "Open"
-			BackFrame.Visible = false
-		end
-end
-end)
-
-UICorner.Name = "UICorner"
-UICorner.Parent = Open
-UICorner.CornerRadius = UDim.new(1, 0)
-
 local EmoteName = Instance.new("TextLabel")
 EmoteName.Name = "EmoteName"
 EmoteName.TextScaled = true
@@ -120,7 +95,7 @@ Corner.Parent = EmoteName
 
 local Loading = Instance.new("TextLabel", BackFrame)
 Loading.AnchorPoint = Vector2.new(0.5, 0.5)
-Loading.Text = "Loading..."
+Loading.Text = "please wait..."
 Loading.TextColor3 = Color3.new(1, 1, 1)
 Loading.BackgroundColor3 = Color3.new(0, 0, 0)
 Loading.TextScaled = true
@@ -293,42 +268,6 @@ ContextActionService:BindCoreActionAtPriority(
 	2001,
 	Enum.KeyCode.Comma
 )
-
-local inputconnect
-ScreenGui:GetPropertyChangedSignal("Enabled"):Connect(function()
-	if BackFrame.Visible == false then
-		EmoteName.Text = "Select an Emote"
-		SearchBar.Text = ""
-		SortFrame.Visible = false
-		GuiService:SetEmotesMenuOpen(false)
-		inputconnect = UserInputService.InputBegan:Connect(function(input, processed)
-			if not processed then
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then
-					BackFrame.Visible = false
-					Open.Text = "Open"
-				end
-			end
-		end)
-	else
-		inputconnect:Disconnect()
-	end
-end)
-
-GuiService.EmotesMenuOpenChanged:Connect(function(isopen)
-	if isopen then
-		BackFrame.Visible = false
-		Open.Text = "Open"
-	end
-end)
-
-GuiService.MenuOpened:Connect(function()
-	BackFrame.Visible = false
-	Open.Text = "Open"
-end)
-
-if not game:IsLoaded() then
-	game.Loaded:Wait()
-end
 
 --thanks inf yield
 local SynV3 = syn and DrawingImmediate
