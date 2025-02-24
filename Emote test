@@ -1,5 +1,3 @@
-I want you when execute this is going first
-
 game:GetService("StarterGui"):SetCore("SendNotification",{
                 Title = "Tips!",
                 Text = "Wait 1 - 10 seconds",
