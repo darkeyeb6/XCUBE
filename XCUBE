@@ -10,14 +10,14 @@ local Window = Rayfield:CreateWindow({
     Name = "XCUBE Window",
     Icon = 0,
     LoadingTitle = "XCUBE",
-    LoadingSubtitle = "by Sirius | SCRIPT BY XCUBE",
-    Theme = "Default",
+    LoadingSubtitle = "SCRIPT BY XCUBE",
+    Theme = "blue",
     DisableRayfieldPrompts = false,
     DisableBuildWarnings = false,
     ConfigurationSaving = {
         Enabled = true,
         FolderName = nil,
-        FileName = "XCUBEhub"
+        FileName = "XCUBE"
     },
     KeySystem = false
 })
@@ -27,7 +27,7 @@ local AnimationsTab = Window:CreateTab("Animations", 4483362458)
 local NewTab = Window:CreateTab("New", 4483362458)
 local CustomAniTab = Window:CreateTab("Custom-ani", 4483362458)
 
--- Adidas & Wicked Popular Buttons
+-- Adidas, Wicked Popular & Catwalk Buttons
 NewTab:CreateButton({
     Name = "Adidas",
     Callback = function()
@@ -39,6 +39,13 @@ NewTab:CreateButton({
     Name = "Wicked Popular",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/Wicked%20(Popular)"))();
+    end
+})
+
+NewTab:CreateButton({
+    Name = "Catwalk",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/animation-s/636ca1729d2b5cb4b650fde11986660010f7b7b4/Catwalk"))();
     end
 })
 
