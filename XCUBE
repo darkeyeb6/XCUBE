@@ -22,71 +22,8 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
--- Create Tabs
-local AnimationsTab = Window:CreateTab("Animations", 4483362458)
-local NewTab = Window:CreateTab("New", 4483362458)
-local CustomAniTab = Window:CreateTab("Custom-ani", 4483362458)
-
--- Adidas & Wicked Popular Buttons
-NewTab:CreateButton({
-    Name = "Adidas",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/Adidas"))()
-    end
-})
-
-NewTab:CreateButton({
-    Name = "Wicked Popular",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/Wicked%20(Popular)"))()
-    end
-})
-
--- Catwalk Button (Added as Requested)
-NewTab:CreateButton({
-    Name = "Catwalk",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/animation-s/636ca1729d2b5cb4b650fde11986660010f7b7b4/Catwalk"))()
-    end
-})
-
--- Standard Animation Buttons
-local animations = {
-    {"Werewolf", "werewolf"},
-    {"Zombie", "Zombie"},
-    {"Vampire", "Vampire"},
-    {"Toy", "Toy"},
-    {"Superhero", "Superhero"},
-    {"Stylish", "Stylish"},
-    {"Pirate", "Pirate"},
-    {"Old-school", "Old-school"},
-    {"Ninja", "Ninja"},
-    {"Mage", "Mage"},
-    {"Levitation", "levitation"},
-    {"Knight", "Knight"},
-    {"Elder", "elder"},
-    {"Cartoony", "Cartoony"},
-    {"Bubbly", "Bubby"},
-    {"Bold", "Bold"},
-    {"Astronaut", "Astronaut"}
-}
-
-for _, anim in ipairs(animations) do
-    AnimationsTab:CreateButton({
-        Name = anim[1],
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/" .. anim[2]))()
-        end
-    })
-end
-
--- Function to Save Last Used Animations
-local function saveLastAnimations()
-    Rayfield:SaveConfiguration()
-end
-
--- Load Saved Animations if Available
-local Animations = Rayfield.Configuration or {
+-- Load Saved Animations
+local Animations = {
     Idle = {"", ""},
     Walk = "",
     Run = "",
@@ -96,6 +33,17 @@ local Animations = Rayfield.Configuration or {
     Swim = "",
     Climb = ""
 }
+
+-- Load from File (If Exists)
+if isfile("XCUBE_Animations/SavedAnimations.json") then
+    local savedData = game:GetService("HttpService"):JSONDecode(readfile("XCUBE_Animations/SavedAnimations.json"))
+    Animations = savedData
+end
+
+-- Function to Save Last Used Animations
+local function saveLastAnimations()
+    writefile("XCUBE_Animations/SavedAnimations.json", game:GetService("HttpService"):JSONEncode(Animations))
+end
 
 -- Function to Apply Animations
 local function applyAnimation(animationType, animationId)
@@ -109,12 +57,30 @@ local function applyAnimation(animationType, animationId)
         Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId[1]
         Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId[2]
     elseif animationType ~= "Idle" and animationId ~= "" then
-        local animField = animationType:lower() .. "." .. animationType .. "Anim"
         Animate[animationType:lower()][animationType .. "Anim"].AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
     end
 end
 
--- Create Input Fields for Custom Animations
+-- Auto-Apply Saved Animations When Script Loads
+for animationType, animationId in pairs(Animations) do
+    if animationId ~= "" then
+        applyAnimation(animationType, animationId)
+    end
+end
+
+-- Auto-Reapply Custom Animations on Respawn
+speaker.CharacterAdded:Connect(function()
+    task.wait(1)
+    for animationType, animationId in pairs(Animations) do
+        if animationId ~= "" then
+            applyAnimation(animationType, animationId)
+        end
+    end
+end)
+
+-- Custom Animation Inputs
+local CustomAniTab = Window:CreateTab("Custom-ani", 4483362458)
+
 CustomAniTab:CreateInput({
     Name = "Idle 1 Animation ID",
     PlaceholderText = "Enter Idle 1 Animation ID",
@@ -151,21 +117,4 @@ for _, animType in ipairs({"Walk", "Run", "Jump", "Fall", "SwimIdle", "Swim", "C
             applyAnimation(animType, value)
         end
     })
-end
-
--- Auto-Reapply Custom Animations on Respawn
-speaker.CharacterAdded:Connect(function()
-    task.wait(1) -- Wait for character to fully load
-    for animationType, animationId in pairs(Animations) do
-        if animationId ~= "" then
-            applyAnimation(animationType, animationId)
-        end
-    end
-end)
-
--- Auto-Apply Saved Animations When Script Loads
-for animationType, animationId in pairs(Animations) do
-    if animationId ~= "" then
-        applyAnimation(animationType, animationId)
-    end
 end
