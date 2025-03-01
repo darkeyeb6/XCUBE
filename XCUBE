@@ -10,14 +10,14 @@ local Window = Rayfield:CreateWindow({
     Name = "XCUBE Window",
     Icon = 0,
     LoadingTitle = "XCUBE",
-    LoadingSubtitle = "SCRIPT BY XCUBE",
-    Theme = "blue",
+    LoadingSubtitle = "by Sirius | SCRIPT BY XCUBE",
+    Theme = "Default",
     DisableRayfieldPrompts = false,
     DisableBuildWarnings = false,
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = nil,
-        FileName = "XCUBE"
+        FolderName = "XCUBE_Animations",
+        FileName = "SavedAnimations"
     },
     KeySystem = false
 })
@@ -27,61 +27,14 @@ local AnimationsTab = Window:CreateTab("Animations", 4483362458)
 local NewTab = Window:CreateTab("New", 4483362458)
 local CustomAniTab = Window:CreateTab("Custom-ani", 4483362458)
 
--- Adidas, Wicked Popular & Catwalk Buttons
-NewTab:CreateButton({
-    Name = "Adidas",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/Adidas"))();
-    end
-})
-
-NewTab:CreateButton({
-    Name = "Wicked Popular",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/Wicked%20(Popular)"))();
-    end
-})
-
-NewTab:CreateButton({
-    Name = "Catwalk",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/animation-s/636ca1729d2b5cb4b650fde11986660010f7b7b4/Catwalk"))();
-    end
-})
-
--- Standard Animation Buttons
-local animations = {
-    {"Werewolf", "werewolf"},
-    {"Zombie", "Zombie"},
-    {"Vampire", "Vampire"},
-    {"Toy", "Toy"},
-    {"Superhero", "Superhero"},
-    {"Stylish", "Stylish"},
-    {"Pirate", "Pirate"},
-    {"Old-school", "Old-school"},
-    {"Ninja", "Ninja"},
-    {"Mage", "Mage"},
-    {"Levitation", "levitation"},
-    {"Knight", "Knight"},
-    {"Elder", "elder"},
-    {"Cartoony", "Cartoony"},
-    {"Bubbly", "Bubby"},
-    {"Bold", "Bold"},
-    {"Astronaut", "Astronaut"}
-}
-
-for _, anim in ipairs(animations) do
-    AnimationsTab:CreateButton({
-        Name = anim[1],
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/" .. anim[2]))();
-        end
-    })
+-- Function to Save Last Used Animations
+local function saveLastAnimations()
+    Rayfield:SaveConfiguration()
 end
 
--- Animation Storage
-local Animations = {
-    Idle = {"", ""},  -- Two values for Idle1 and Idle2
+-- Load Saved Animations if Available
+local Animations = Rayfield.Configuration or {
+    Idle = {"", ""},
     Walk = "",
     Run = "",
     Jump = "",
@@ -124,8 +77,10 @@ CustomAniTab:CreateInput({
     Name = "Idle 1 Animation ID",
     PlaceholderText = "Enter Idle 1 Animation ID",
     RemoveTextAfterFocusLost = false,
+    Default = Animations.Idle[1],
     Callback = function(value)
         Animations.Idle[1] = value
+        saveLastAnimations()
         applyAnimation("Idle", Animations.Idle)
     end
 })
@@ -134,8 +89,10 @@ CustomAniTab:CreateInput({
     Name = "Idle 2 Animation ID",
     PlaceholderText = "Enter Idle 2 Animation ID",
     RemoveTextAfterFocusLost = false,
+    Default = Animations.Idle[2],
     Callback = function(value)
         Animations.Idle[2] = value
+        saveLastAnimations()
         applyAnimation("Idle", Animations.Idle)
     end
 })
@@ -145,8 +102,10 @@ for _, animType in ipairs({"Walk", "Run", "Jump", "Fall", "SwimIdle", "Swim", "C
         Name = animType .. " Animation ID",
         PlaceholderText = "Enter " .. animType .. " Animation ID",
         RemoveTextAfterFocusLost = false,
+        Default = Animations[animType],
         Callback = function(value)
             Animations[animType] = value
+            saveLastAnimations()
             applyAnimation(animType, value)
         end
     })
@@ -161,3 +120,10 @@ speaker.CharacterAdded:Connect(function()
         end
     end
 end)
+
+-- Auto-Apply Saved Animations When Script Loads
+for animationType, animationId in pairs(Animations) do
+    if animationId ~= "" then
+        applyAnimation(animationType, animationId)
+    end
+end
