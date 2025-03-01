@@ -22,99 +22,56 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
--- Load Saved Animations
-local Animations = {
-    Idle = {"", ""},
-    Walk = "",
-    Run = "",
-    Jump = "",
-    Fall = "",
-    SwimIdle = "",
-    Swim = "",
-    Climb = ""
-}
-
--- Load from File (If Exists)
-if isfile("XCUBE_Animations/SavedAnimations.json") then
-    local savedData = game:GetService("HttpService"):JSONDecode(readfile("XCUBE_Animations/SavedAnimations.json"))
-    Animations = savedData
-end
-
--- Function to Save Last Used Animations
-local function saveLastAnimations()
-    writefile("XCUBE_Animations/SavedAnimations.json", game:GetService("HttpService"):JSONEncode(Animations))
-end
-
--- Function to Apply Animations
-local function applyAnimation(animationType, animationId)
-    local Char = speaker.Character
-    if not Char then return end
-
-    local Animate = Char:FindFirstChild("Animate")
-    if not Animate then return end
-
-    if animationType == "Idle" and animationId[1] ~= "" and animationId[2] ~= "" then
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId[1]
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=" .. animationId[2]
-    elseif animationType ~= "Idle" and animationId ~= "" then
-        Animate[animationType:lower()][animationType .. "Anim"].AnimationId = "http://www.roblox.com/asset/?id=" .. animationId
-    end
-end
-
--- Auto-Apply Saved Animations When Script Loads
-for animationType, animationId in pairs(Animations) do
-    if animationId ~= "" then
-        applyAnimation(animationType, animationId)
-    end
-end
-
--- Auto-Reapply Custom Animations on Respawn
-speaker.CharacterAdded:Connect(function()
-    task.wait(1)
-    for animationType, animationId in pairs(Animations) do
-        if animationId ~= "" then
-            applyAnimation(animationType, animationId)
-        end
-    end
-end)
-
--- Custom Animation Inputs
+-- Create Tabs
+local AnimationsTab = Window:CreateTab("Animations", 4483362458)
+local NewTab = Window:CreateTab("New", 4483362458)
 local CustomAniTab = Window:CreateTab("Custom-ani", 4483362458)
 
-CustomAniTab:CreateInput({
-    Name = "Idle 1 Animation ID",
-    PlaceholderText = "Enter Idle 1 Animation ID",
-    RemoveTextAfterFocusLost = false,
-    Default = Animations.Idle[1],
-    Callback = function(value)
-        Animations.Idle[1] = value
-        saveLastAnimations()
-        applyAnimation("Idle", Animations.Idle)
-    end
-})
+-- Animation List
+local animations = {
+    {"Werewolf", "werewolf"},
+    {"Zombie", "Zombie"},
+    {"Vampire", "Vampire"},
+    {"Toy", "Toy"},
+    {"Superhero", "Superhero"},
+    {"Stylish", "Stylish"},
+    {"Pirate", "Pirate"},
+    {"Old-school", "Old-school"},
+    {"Ninja", "Ninja"},
+    {"Mage", "Mage"},
+    {"Levitation", "levitation"},
+    {"Knight", "Knight"},
+    {"Elder", "elder"},
+    {"Cartoony", "Cartoony"},
+    {"Bubbly", "Bubby"},
+    {"Bold", "Bold"},
+    {"Astronaut", "Astronaut"}
+}
 
-CustomAniTab:CreateInput({
-    Name = "Idle 2 Animation ID",
-    PlaceholderText = "Enter Idle 2 Animation ID",
-    RemoveTextAfterFocusLost = false,
-    Default = Animations.Idle[2],
-    Callback = function(value)
-        Animations.Idle[2] = value
-        saveLastAnimations()
-        applyAnimation("Idle", Animations.Idle)
-    end
-})
-
-for _, animType in ipairs({"Walk", "Run", "Jump", "Fall", "SwimIdle", "Swim", "Climb"}) do
-    CustomAniTab:CreateInput({
-        Name = animType .. " Animation ID",
-        PlaceholderText = "Enter " .. animType .. " Animation ID",
-        RemoveTextAfterFocusLost = false,
-        Default = Animations[animType],
-        Callback = function(value)
-            Animations[animType] = value
-            saveLastAnimations()
-            applyAnimation(animType, value)
+-- Add Buttons for Each Animation
+for _, anim in ipairs(animations) do
+    AnimationsTab:CreateButton({
+        Name = anim[1],
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/" .. anim[2]))();
         end
     })
 end
+
+-- **ALL ANIMATIONS BUTTON**
+AnimationsTab:CreateButton({
+    Name = "Load All Animations",
+    Callback = function()
+        for _, anim in ipairs(animations) do
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/Test1/refs/heads/main/" .. anim[2]))();
+        end
+    end
+})
+
+-- **ADD CATWALK TO NEW TAB**
+NewTab:CreateButton({
+    Name = "Catwalk",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/animation-s/636ca1729d2b5cb4b650fde11986660010f7b7b4/Catwalk"))();
+    end
+})
