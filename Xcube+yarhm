@@ -1,4 +1,4 @@
--- YARHM 1.18.2
+-- Xcube
 -- is anyone even gonna see these comments
 
 
@@ -739,7 +739,7 @@ Converted["_HubDesc"].Name = "HubDesc"
 Converted["_HubDesc"].Parent = Converted["_Menu"]
 
 Converted["_HubName"].Font = Enum.Font.GothamBold
-Converted["_HubName"].Text = "YARHM"
+Converted["_HubName"].Text = "Xcube"
 Converted["_HubName"].TextColor3 = Color3.fromRGB(255, 255, 255)
 Converted["_HubName"].TextScaled = true
 Converted["_HubName"].TextSize = 14
@@ -769,7 +769,7 @@ Converted["_CanvasGroup"].Parent = Converted["_Menu"]
 
 Converted["_UICorner14"].Parent = Converted["_CanvasGroup"]
 
-Converted["_ImageLabel"].Image = "rbxassetid://17864987433"
+Converted["_ImageLabel"].Image = "rbxassetid://81643146111555"
 Converted["_ImageLabel"].AnchorPoint = Vector2.new(0.5, 0.5)
 Converted["_ImageLabel"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Converted["_ImageLabel"].BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -793,7 +793,7 @@ Converted["_Opener"].Name = "Opener"
 Converted["_Opener"].Parent = Converted["_CanvasGroup"]
 
 Converted["_TextLabel5"].Font = Enum.Font.GothamBold
-Converted["_TextLabel5"].Text = "Yet Another Random Hub Menu"
+Converted["_TextLabel5"].Text = "Random Hub Menu"
 Converted["_TextLabel5"].TextColor3 = Color3.fromRGB(255, 69.00000348687172, 67.00000360608101)
 Converted["_TextLabel5"].TextScaled = true
 Converted["_TextLabel5"].TextSize = 14
@@ -846,7 +846,7 @@ Converted["_TextLabel6"].Size = UDim2.new(0, 200, 0, 50)
 Converted["_TextLabel6"].Parent = Converted["_Area1"]
 
 Converted["_TextLabel7"].Font = Enum.Font.GothamBold
-Converted["_TextLabel7"].Text = "YARHM"
+Converted["_TextLabel7"].Text = "Xcube"
 Converted["_TextLabel7"].TextColor3 = Color3.fromRGB(255, 255, 255)
 Converted["_TextLabel7"].TextScaled = true
 Converted["_TextLabel7"].TextSize = 14
@@ -1072,7 +1072,7 @@ Converted["_Range"].Name = "Range"
 Converted["_Range"].Parent = Converted["_YARHM"]
 
 Converted["_TextLabel10"].Font = Enum.Font.Unknown
-Converted["_TextLabel10"].Text = "How many #### I give"
+Converted["_TextLabel10"].Text = "What year is it?"
 Converted["_TextLabel10"].TextColor3 = Color3.fromRGB(255, 255, 255)
 Converted["_TextLabel10"].TextScaled = true
 Converted["_TextLabel10"].TextSize = 14
@@ -1399,7 +1399,7 @@ do -- Fake Module: StarterGui.YARHM.FUNCTIONS
 			cross = "rbxassetid://10002373478",
 			check = "rbxassetid://11604833061"
 		}
-		
+	    
 		incomingNotif = false
 		function FUNCTIONSmodule.notification(s, color, icon)
 			incomingNotif = true
@@ -4538,6 +4538,55 @@ local function COBWDKS_fake_script() -- Fake Script: StarterGui.YARHM.Universal
 		end,}
 	})
 	
+	table.insert(module, {
+		Type = "Text",
+		Args = {"Aim locking"}
+	})
+	
+	local aimlockrscon
+	local target
+	
+	table.insert(module, {
+		Type = "Input",
+		Args = {"Target player", "Set target", function(Self, input)
+			if not Players:FindFirstChild(getPlayer(input, game.Players.LocalPlayer)) then
+				fu.notification("Player not found.")
+				return
+			end
+			fu.notification("Target is set to " .. Players:FindFirstChild(getPlayer(input, game.Players.LocalPlayer)).Name)
+			target = Players:FindFirstChild(getPlayer(input, game.Players.LocalPlayer))
+		end,}
+	})
+	
+	local aimlock = false
+	local cam = workspace.CurrentCamera
+	table.insert(module, {
+		Type = "Button",
+		Args = {"Aim lock", function(Self)
+			if aimlock then return end
+			if aimlockrscon then aimlockrscon:Disconnect() end
+			if not target then fu.notification("Set a target first.") return end
+			aimlockrscon = rs.RenderStepped:Connect(function()
+				if not target then fu.notification("No valid target.") aimlockrscon:Disconnect() return end
+				if not target.Character then return end
+				if not target.Character:FindFirstChild("HumanoidRootPart") then return end
+				cam.CFrame = CFrame.new(cam.CFrame.Position, target.Character:FindFirstChild("HumanoidRootPart").Position)
+			end)
+			aimlock = true
+			fu.notification("Aim lock is now on.")
+		end,}
+	})
+	
+	table.insert(module, {
+		Type = "Button",
+		Args = {"Unaim lock", function(Self)
+			if not aimlock then return end
+			aimlock = false
+			if aimlockrscon then aimlockrscon:Disconnect() end
+			fu.notification("Aim lock is now off.")
+		end,}
+	})
+	
 	local RunService = rs
 	local UserInputService = uis
 	
@@ -5029,7 +5078,7 @@ local function COBWDKS_fake_script() -- Fake Script: StarterGui.YARHM.Universal
 	
 	table.insert(module, {
 		Type = "Button",
-		Args = {"Hide YARHM+Xcube", function(Self)
+		Args = {"Hide YARHM", function(Self)
 			if uis.KeyboardEnabled then
 				ts:Create(script.Parent.Menu.UIScale, TweenInfo.new(0.6, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
 					Scale = 0
@@ -5049,6 +5098,59 @@ local function COBWDKS_fake_script() -- Fake Script: StarterGui.YARHM.Universal
 	}
 	)
 	
+	table.insert(module, {
+		Type = "Button",
+		Args = {"FPS Boost", function(Self)
+			fu.dialog("FPS boosting", "FPS boosting can have unpredictable effects. You may instead lag more using this!", {"FPS boost anyway", "Nevermind"})
+			local result = fu.waitfordialog()
+			fu.closedialog()
+			if result == "FPS boost anyway" then
+				local Terrain = workspace:FindFirstChildOfClass('Terrain')
+				Terrain.WaterWaveSize = 0
+				Terrain.WaterWaveSpeed = 0
+				Terrain.WaterReflectance = 0
+				Terrain.WaterTransparency = 0
+				game.Lighting.GlobalShadows = false
+				game.Lighting.FogEnd = 9e9
+				pcall(function()
+					settings().Rendering.QualityLevel = 1
+				end)
+				for i,v in pairs(game:GetDescendants()) do
+					if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+						v.Material = "Plastic"
+						v.Reflectance = 0
+					elseif v:IsA("Decal") then
+						v.Transparency = 1
+					elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+						v.Lifetime = NumberRange.new(0)
+					elseif v:IsA("Explosion") then
+						v.BlastPressure = 1
+						v.BlastRadius = 1
+					end
+				end
+				for i,v in pairs(game.Lighting:GetDescendants()) do
+					if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+						v.Enabled = false
+					end
+				end
+				workspace.DescendantAdded:Connect(function(child)
+					task.spawn(function()
+						if child:IsA('ForceField') then
+							rs.Heartbeat:Wait()
+							child:Destroy()
+						elseif child:IsA('Sparkles') then
+							rs.Heartbeat:Wait()
+							child:Destroy()
+						elseif child:IsA('Smoke') or child:IsA('Fire') then
+							rs.Heartbeat:Wait()
+							child:Destroy()
+						end
+					end)
+				end)
+			end
+		end,}
+	})
+
 	local rsloopconnectionfling
 	local clip = true
 	local nocliploop
@@ -5080,7 +5182,18 @@ local function COBWDKS_fake_script() -- Fake Script: StarterGui.YARHM.Universal
 
 
 
-	
+	table.insert(module, {
+		Type = "Text",
+		Args = {"Other"}
+	})
+
+	table.insert(module, {
+		Type = "Button",
+		Args = {"Lock/unlock a floating button", function()
+			fu.lockMode = true
+			fu.notification("Click/tap a floating button to lock/unlock...")
+		end,}
+	})
 
 	table.insert(module, {
 		Type = "Button",
@@ -5109,6 +5222,28 @@ local function COBWDKS_fake_script() -- Fake Script: StarterGui.YARHM.Universal
 	}
 	)
 
+	local tagsFolder = Instance.new("Folder", script.Parent)
+	tagsFolder.Name = "TagsFolder"
+
+	local Players = game:GetService("Players")
+
+	-- Customize these with your own usernames and developers
+	local usernameColors = {
+		["XxxS_omeonexxX"] = Color3.fromHex("#f48fff"),
+		["Dextacular"] = Color3.fromHex("#f48fff"),
+		["yarhmplus"] = Color3.fromHex("#f48fff"),
+		["joystick531"] = Color3.fromHex("#ff0000"),
+		["givepetroblox"] = Color3.fromHex("#ff0000"),
+		["Bubberbolf"] = Color3.fromHex("#0030ff"),
+	}
+
+	local specialUsernameColors = {
+		["heyprestonitsme"] = Color3.fromHex("#ffac33"),
+		["vuralnovada"] = Color3.fromHex("#ffac33"),
+		["Doge3071"] = Color3.fromHex("#ffac33"),
+		["jacobisawsome307"] = Color3.fromHex("#ffac33"),
+		["fweemeimtrapwed"] = Color3.fromHex("ffac33"),
+	}
 
 	local mainText = "YARHM+Xcube Developer"
 	local mainFont = Enum.Font.GothamBold
