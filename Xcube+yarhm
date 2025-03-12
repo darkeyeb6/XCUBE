@@ -4538,55 +4538,6 @@ local function COBWDKS_fake_script() -- Fake Script: StarterGui.YARHM.Universal
 		end,}
 	})
 	
-	table.insert(module, {
-		Type = "Text",
-		Args = {"Aim locking"}
-	})
-	
-	local aimlockrscon
-	local target
-	
-	table.insert(module, {
-		Type = "Input",
-		Args = {"Target player", "Set target", function(Self, input)
-			if not Players:FindFirstChild(getPlayer(input, game.Players.LocalPlayer)) then
-				fu.notification("Player not found.")
-				return
-			end
-			fu.notification("Target is set to " .. Players:FindFirstChild(getPlayer(input, game.Players.LocalPlayer)).Name)
-			target = Players:FindFirstChild(getPlayer(input, game.Players.LocalPlayer))
-		end,}
-	})
-	
-	local aimlock = false
-	local cam = workspace.CurrentCamera
-	table.insert(module, {
-		Type = "Button",
-		Args = {"Aim lock", function(Self)
-			if aimlock then return end
-			if aimlockrscon then aimlockrscon:Disconnect() end
-			if not target then fu.notification("Set a target first.") return end
-			aimlockrscon = rs.RenderStepped:Connect(function()
-				if not target then fu.notification("No valid target.") aimlockrscon:Disconnect() return end
-				if not target.Character then return end
-				if not target.Character:FindFirstChild("HumanoidRootPart") then return end
-				cam.CFrame = CFrame.new(cam.CFrame.Position, target.Character:FindFirstChild("HumanoidRootPart").Position)
-			end)
-			aimlock = true
-			fu.notification("Aim lock is now on.")
-		end,}
-	})
-	
-	table.insert(module, {
-		Type = "Button",
-		Args = {"Unaim lock", function(Self)
-			if not aimlock then return end
-			aimlock = false
-			if aimlockrscon then aimlockrscon:Disconnect() end
-			fu.notification("Aim lock is now off.")
-		end,}
-	})
-	
 	local RunService = rs
 	local UserInputService = uis
 	
@@ -5078,7 +5029,7 @@ local function COBWDKS_fake_script() -- Fake Script: StarterGui.YARHM.Universal
 	
 	table.insert(module, {
 		Type = "Button",
-		Args = {"Hide YARHM", function(Self)
+		Args = {"Hide YARHM+Xcube", function(Self)
 			if uis.KeyboardEnabled then
 				ts:Create(script.Parent.Menu.UIScale, TweenInfo.new(0.6, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
 					Scale = 0
@@ -5158,28 +5109,6 @@ local function COBWDKS_fake_script() -- Fake Script: StarterGui.YARHM.Universal
 	}
 	)
 
-	local tagsFolder = Instance.new("Folder", script.Parent)
-	tagsFolder.Name = "TagsFolder"
-
-	local Players = game:GetService("Players")
-
-	-- Customize these with your own usernames and developers
-	local usernameColors = {
-		["XxxS_omeonexxX"] = Color3.fromHex("#f48fff"),
-		["Dextacular"] = Color3.fromHex("#f48fff"),
-		["yarhmplus"] = Color3.fromHex("#f48fff"),
-		["joystick531"] = Color3.fromHex("#ff0000"),
-		["givepetroblox"] = Color3.fromHex("#ff0000"),
-		["Bubberbolf"] = Color3.fromHex("#0030ff"),
-	}
-
-	local specialUsernameColors = {
-		["heyprestonitsme"] = Color3.fromHex("#ffac33"),
-		["vuralnovada"] = Color3.fromHex("#ffac33"),
-		["Doge3071"] = Color3.fromHex("#ffac33"),
-		["jacobisawsome307"] = Color3.fromHex("#ffac33"),
-		["fweemeimtrapwed"] = Color3.fromHex("ffac33"),
-	}
 
 	local mainText = "YARHM+Xcube Developer"
 	local mainFont = Enum.Font.GothamBold
