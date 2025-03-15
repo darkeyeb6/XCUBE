@@ -1,0 +1,92 @@
+spawn(function()
+    task.wait(8) -- Wait 1 second before executing
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/darkeyeb6/XCUBE/refs/heads/main/Emote%20test"))()
+end)
+
+spawn(function()
+    task.wait(9) -- Wait 1 second before executing
+    game.Players.LocalPlayer.PlayerGui.ContextActionGui:Destroy()
+end)
+
+spawn(function()
+    task.wait(10) -- Wait 1 second before executing
+    game.Players.LocalPlayer.PlayerGui.ContextActionGui:Destroy()
+end)
+
+spawn(function()
+    task.wait(11) -- Wait 1 second before executing
+    game.Players.LocalPlayer.PlayerGui.ContextActionGui:Destroy()
+end)
+
+spawn(function()
+    task.wait(13) -- Wait 1 second before executing
+    local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+local button = Instance.new("TextButton")
+local uis = game:GetService("UserInputService")
+
+-- Prevent removal on reset
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Button properties
+button.Parent = screenGui
+button.Size = UDim2.new(0, 60, 0, 60)  -- 60x60 size
+button.Position = UDim2.new(1, -70, 0, 10) -- Top-right corner (10px from top, 70px from right)
+button.Text = ","
+button.BackgroundColor3 = Color3.new(1, 1, 1) -- White background
+button.BackgroundTransparency = 0.2 -- Slight transparency
+button.TextColor3 = Color3.new(0, 0, 0) -- Black text
+button.Active = true
+button.AutoButtonColor = false
+
+-- Function to type a comma when clicked
+button.MouseButton1Click:Connect(function()
+    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Comma, false, game)
+    game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.Comma, false, game)
+end)
+
+-- Dragging system
+local dragging, dragInput, startPos, startMousePos
+
+button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        startPos = button.Position
+        startMousePos = input.Position
+    end
+end)
+
+button.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+uis.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - startMousePos
+        button.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+uis.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+end)
+spawn(function()
+    task.wait(8) -- Wait 1 second before executing
+    local Sound = Instance.new("Sound")
+Sound.SoundId = "rbxassetid://5914602124"
+Sound.Volume = 5
+Sound.Looped = false
+Sound.Parent = game:GetService("Workspace")
+Sound:Play()
+
+game:GetService("Debris"):AddItem(Sound, 5) -- Removes the sound after 5 seconds
+end)
