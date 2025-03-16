@@ -1,0 +1,193 @@
+-- Services
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+-- Check if script is already running
+if ReplicatedStorage:FindFirstChild("Aaaaa") then
+    local alreadyRunningSound = Instance.new("Sound", game.CoreGui)
+    alreadyRunningSound.SoundId = "rbxassetid://5914602124"
+    alreadyRunningSound.Volume = 2
+    alreadyRunningSound:Play()
+    
+    StarterGui:SetCore("SendNotification", {
+        Title = "Speed glitch",
+        Text = "Script is already running",
+        Icon = "rbxassetid://81643146111555",
+        Duration = 4
+    })
+    
+    return
+end
+
+-- Mark script as running
+local scriptCheck = Instance.new("StringValue", ReplicatedStorage)
+scriptCheck.Name = "Aaaaa"
+
+-- Create sound for notifications
+local NSound = Instance.new("Sound", game.CoreGui)
+NSound.SoundId = "rbxassetid://9086208751"
+NSound.Volume = 3
+
+-- Function to send a notification
+function Notify(Txt, Dur)
+    StarterGui:SetCore("SendNotification", {
+        Title = "Speed glitch",
+        Text = Txt,
+        Icon = "rbxassetid://81643146111555",
+        Duration = Dur
+    })
+    NSound:Play()
+end
+
+-- Notify user when script starts
+Notify("To remove the speed glitch, type ;stop", 10)
+
+-- Variables for the player
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Default speed settings
+local normalSpeed = 16
+local boostSpeed = 50
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui", game.CoreGui)
+
+-- Main GUI Frame
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 0, 0, 0) -- Start closed
+frame.Position = UDim2.new(0.5, -100, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.Visible = false
+frame.ClipsDescendants = true
+
+-- UI Styling
+local uiCorner = Instance.new("UICorner", frame)
+uiCorner.CornerRadius = UDim.new(0, 10)
+
+local uiStroke = Instance.new("UIStroke", frame)
+uiStroke.Thickness = 2
+uiStroke.Color = Color3.fromRGB(255, 255, 255)
+
+-- Speed Input Box
+local speedInputBox = Instance.new("TextBox", frame)
+speedInputBox.Size = UDim2.new(0, 180, 0, 50)
+speedInputBox.Position = UDim2.new(0, 10, 0, 50)
+speedInputBox.PlaceholderText = "Enter speed 1-10,000"
+speedInputBox.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+speedInputBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+speedInputBox.Font = Enum.Font.GothamBold
+speedInputBox.TextSize = 16
+
+-- Apply Button
+local applyButton = Instance.new("TextButton", frame)
+applyButton.Size = UDim2.new(0, 180, 0, 50)
+applyButton.Position = UDim2.new(0, 10, 0, 110)
+applyButton.Text = "Apply"
+applyButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+applyButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+applyButton.Font = Enum.Font.GothamBold
+applyButton.TextSize = 16
+
+-- Label Message
+local messageLabel = Instance.new("TextLabel", frame)
+messageLabel.Size = UDim2.new(0, 180, 0, 30)
+messageLabel.Position = UDim2.new(0, 10, 0, 170)
+messageLabel.Text = "Subscribe to darkeyeb6"
+messageLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+messageLabel.TextScaled = true
+messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+messageLabel.Font = Enum.Font.GothamBold
+
+-- Close Button
+local closeButton = Instance.new("TextButton", frame)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -40, 0, 5)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 20
+
+-- Open Button
+local openButton = Instance.new("TextButton", screenGui)
+openButton.Size = UDim2.new(0, 100, 0, 50)
+openButton.Position = UDim2.new(0.1, 0, 0.1, 0)
+openButton.Text = "Open GUI"
+openButton.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+openButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+openButton.Font = Enum.Font.GothamBold
+openButton.TextSize = 16
+openButton.Active = true
+openButton.Draggable = true
+
+-- Rainbow Effect
+local function rainbowTextEffect(uiElement)
+    local hue = 0
+    while uiElement.Parent do
+        hue = (hue + 1) % 360
+        uiElement.TextColor3 = Color3.fromHSV(hue / 360, 1, 1)
+        RunService.RenderStepped:Wait()
+    end
+end
+
+-- Apply rainbow effect
+spawn(function() rainbowTextEffect(openButton) end)
+spawn(function() rainbowTextEffect(closeButton) end)
+spawn(function() rainbowTextEffect(applyButton) end)
+spawn(function() rainbowTextEffect(speedInputBox) end)
+spawn(function() rainbowTextEffect(messageLabel) end)
+
+-- Smooth GUI Open/Close
+local tweenInfoOpen = TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out)
+local tweenInfoClose = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
+
+local function openGUI()
+    openButton.Visible = false
+    frame.Visible = true
+    TweenService:Create(frame, tweenInfoOpen, { Size = UDim2.new(0, 200, 0, 220) }):Play()
+end
+
+local function closeGUI()
+    local closeTween = TweenService:Create(frame, tweenInfoClose, { Size = UDim2.new(0, 0, 0, 0) })
+    closeTween:Play()
+    closeTween.Completed:Connect(function()
+        frame.Visible = false
+        openButton.Visible = true
+        TweenService:Create(openButton, TweenInfo.new(0.5), { BackgroundTransparency = 0 }):Play()
+    end)
+end
+
+openButton.MouseButton1Click:Connect(openGUI)
+closeButton.MouseButton1Click:Connect(closeGUI)
+
+-- Boost Speed
+applyButton.MouseButton1Click:Connect(function()
+    local inputSpeed = tonumber(speedInputBox.Text)
+    if inputSpeed and inputSpeed >= 1 and inputSpeed <= 10000 then
+        boostSpeed = inputSpeed
+        speedInputBox.Text = "Boost speed set to " .. inputSpeed .. "!"
+    else
+        speedInputBox.Text = "Enter a valid number (1-10,000)!"
+    end
+end)
+
+humanoid.StateChanged:Connect(function(_, newState)
+    if newState == Enum.HumanoidStateType.Jumping then
+        humanoid.WalkSpeed = boostSpeed
+    elseif newState == Enum.HumanoidStateType.Landed then
+        humanoid.WalkSpeed = normalSpeed
+    end
+end)
+
+-- Remove Everything on ";stop"
+player.Chatted:Connect(function(message)
+    if message:lower() == ";stop" then
+        humanoid.WalkSpeed = normalSpeed
+        screenGui:Destroy()
+        scriptCheck:Destroy()
+    end
+end)
