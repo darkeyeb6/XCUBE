@@ -26,7 +26,7 @@ NSound.Volume = 1
 
 function Notify(Txt, Dur)
     STARTERGUI:SetCore("SendNotification",{
-        Title = "FED's Mobile Fly",
+        Title = "Mobile Fly",
         Text = Txt,
         Icon = "rbxassetid://81643146111555", -- Updated icon
         Duration = Dur
